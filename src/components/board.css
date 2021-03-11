@@ -3,24 +3,27 @@ body {
   margin: 40px;
 }
 
-.box {
-  background-color: #444;
-  color: #fff;
-  border-radius: 5px;
-  padding: 20px;
-  font-size: 150%;
+.point {
+  border: 1px solid #ccc;
+  padding: 0;
+  /* BAD but quick and temp */
+  line-height: 46px;
 }
 
-.box:nth-child(even) {
-  background-color: #ccc;
-  color: #000;
+.point.target {
+  background-color: #444
+}
+
+.point.snake {
+  background-color: greenyellow;
 }
 
 .wrapper {
   width: 600px;
   display: grid;
-  grid-gap: 10px;
-  grid-template-columns: repeat(6, 100px);
-  grid-template-rows: 100px 100px 100px;
-  grid-auto-flow: column;
+  grid-gap: 0;
+  grid-template-columns: repeat(8, 50px);
+  grid-template-rows: 50px 50px 50px 50px 50px 50px 50px 50px;
+  /* grid-auto-flow: column; */ /* Meaning 0 1 2 3 4 => columns */
+  grid-auto-flow: dense; /* Meaning 0 1 2 3 4 => rows */
 }
