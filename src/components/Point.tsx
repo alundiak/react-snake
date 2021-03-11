@@ -1,5 +1,5 @@
-import React from 'react';
+// import React from 'react';
 
-export function Point({ x1, y1, blink, children }: any) {
-  return <div className={`point ${blink ? 'blink' : ''}`}>{children}</div>
+export function Point({ x1, y1, className, children }: any) {
+	return <div className={`point ${className}`}>{children}</div>
 }
