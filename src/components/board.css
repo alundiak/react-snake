@@ -18,12 +18,21 @@ body {
   background-color: greenyellow;
 }
 
+.point.snake.head {
+  background-color: greenyellow;
+  box-shadow: #444;
+}
+
 .wrapper {
   width: 600px;
   display: grid;
   grid-gap: 0;
   grid-template-columns: repeat(8, 50px);
   grid-template-rows: 50px 50px 50px 50px 50px 50px 50px 50px;
-  /* grid-auto-flow: column; */ /* Meaning 0 1 2 3 4 => columns */
-  grid-auto-flow: dense; /* Meaning 0 1 2 3 4 => rows */
+
+  /* Meaning 0 1 2 3 4 => columns */
+  /* grid-auto-flow: column; */
+
+  /* Meaning 0 1 2 3 4 => rows */
+  grid-auto-flow: dense;
 }
