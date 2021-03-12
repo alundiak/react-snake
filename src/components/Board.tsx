@@ -133,18 +133,19 @@ function snakeMove(boardState: any, newDirection: any, dispatchMove: any) {
     if (yDirection === snakeHead[0]) {
         // it is LEFT or RIGHT move of snake head
         if (xDirection < snakeHead[1]) {
-            let interval1: any;
+            // let interval1: any;
             // -- for loop = LEFT MOVE
-            for (let i = snakeHead[1] - 1/* next point */; i >= 0; i--) {
-                console.log(i);
-                const callback = () => {
-                    console.log('callback');
+            let i = snakeHead[1] - 1; /* next point */;
+            const callback = () => {
+                console.log('callback');
+                dispatchMove([yDirection, i]);
+                i--;
+            };
 
-                    dispatchMove([yDirection, i]);
-                };
-                setTimeout(callback, 3000);
-                // if i < 0 => -1 and less => dispatch(CONFLICT_EDGE)
-            }
+            console.log(i);
+            setTimeout(callback, 500);
+            // if i < 0 => -1 and less => dispatch(CONFLICT_EDGE)
+
             // clearInterval(interval1);
         } else {
             // ++ for loop = RIGHT MOVE
