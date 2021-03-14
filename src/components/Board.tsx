@@ -1,6 +1,8 @@
-import React, { useState, useReducer, PropsWithChildren } from 'react';
+import React, { useReducer, PropsWithChildren } from 'react';
 import { Point } from './Point';
 import './board.css';
+
+const FREQUENCY = 1000;
 
 // Array for axis used in format [y x] of two positive numbers:
 // y top-to-bottom and
@@ -15,8 +17,8 @@ const initialBoardState = {
     //     tail: []
     // },
     started: false,
-    finished: false,
-    conflict: false, // target | itself | edge
+    // finished: false,
+    // conflict: false, // target | itself | edge
 };
 
 // Approach using <div> and css-grid layout
@@ -31,23 +33,15 @@ export function Board({ children }: PropsWithChildren<any>) {
     // const matrix = Array(width).fill(null).map(el => Array(height).fill(0));
     // console.log(matrix);
 
+    // This must be created on demand, after click for every cell once. NOT MORE
     const gameTrigger = (newDirection: number[/* y x */]) => {
-        console.log('gameTrigger');
-
         if (!boardState.started) {
-            dispatch({
-                type: 'START'
-            });
+            dispatch({ type: 'START' });
+        } else {
+            dispatch({ type: 'INTERRUPT' });
         }
 
-        // This must be created on demand, after click for every cell once. NOT MORE
-        const dispatchMove = (newPoint: number[]) =>
-            dispatch({
-                type: 'SNAKE_MOVE',
-                newPosition: newPoint
-            });
-
-        snakeMove(boardState, newDirection, dispatchMove);
+        snakeMove(boardState, newDirection, dispatch);
     };
 
     const boardCore = [];
@@ -68,6 +62,14 @@ export function Board({ children }: PropsWithChildren<any>) {
 }
 
 function boardReducer(state: any, action: any) {
+    // console.log('boardReducer'); // TODO
+    // Due to using <React.StrictMode> useReducer() -> reducer() function is double-invoking !!!
+    // https://reactjs.org/docs/strict-mode.html#detecting-unexpected-side-effects
+    // console.log() inside of switch case is once, but random array is regenerated twice
+    // SOLUTION: move ANY logic BEFORE dispatch() and pass any new changed data via dispatch() func.
+    // https://github.com/facebook/react/issues/16295
+    // https://stackoverflow.com/questions/54892403/usereducer-action-dispatched-twice
+
     switch (action.type) {
         case 'START':
             console.log('Game STARTED');
@@ -77,10 +79,13 @@ function boardReducer(state: any, action: any) {
             }
 
         case 'FINISH':
-            console.log('Game FINISHED');
+            console.log('Game Over!');
+
             return {
                 ...state,
-                started: false // and stop while(1) loop OR setInterval()
+                started: false, // and stop while(1) loop OR setInterval()
+                // targetPoint: generateRandomPoint('target'), // BAD
+                // snake: [generateRandomPoint('snakeHead')] // BAD
             }
 
         case 'SNAKE_MOVE':
@@ -94,64 +99,126 @@ function boardReducer(state: any, action: any) {
             // state.snake.unshift(action.newDirection);
             // state.snake.pop(); // add a keyframe animation for slow fade out of last point on tail
 
-            state.snake[0] = action.newPosition;
+            // state.snake[0] = action.newPosition; // MUTABLE !!!!
 
             // TODO
             // const [snakeHead, ...snakeTail] = state.snake; // snakeTail can be undefined or many arrays [].length == 2
             // TODO
 
+            const [, ...tail] = state.snake;
+
             return {
                 ...state,
+                snake: [action.newPosition, ...tail]
             }
 
         case 'CONFLICT_WITH_TARGET':
-            // TODO
+            console.log('Target point reached. Generating new one.');
             // when snake eats target [yT, xT], size should be increased - new sub-array will be pushed to boardState.snake
-            break;
+
+            // action.newPosition;
+
+            return {
+                ...state,
+                // targetPoint: generateRandomPoint('target'), // BAD
+                // snake: [generateRandomPoint('snakeHead')] // BAD
+            }
 
         case 'CONFLICT_WITH_ITSELF':
-            // TODO
-            break;
+            console.log('Don\'t eat yourself');
+
+            return {
+                ...state,
+                // targetPoint: generateRandomPoint('target'), // BAD
+                // snake: [generateRandomPoint('snakeHead')] // BAD
+            }
 
         case 'CONFLICT_WITH_EDGES':
-            // TODO
-            // [0 > x > width] or
-            // [0 > y > height]
-            break;
+            console.log('Bang...');
+
+            return {
+                ...state,
+                started: false,
+                targetPoint: action.newPosition, // SHOULD BE OK
+                snake: [action.newSnakeHead] // SHOULD BE OK
+            }
+
+        case 'REGENERATE_TARGET':
+            console.log('Target point regeneration.');
+
+            return {
+                ...state,
+                targetPoint: action.newPosition, // IS OK
+            }
+
+        case 'REGENERATE_SNAKE':
+            console.log('Snake head point regeneration.');
+
+            return {
+                ...state,
+                snake: [action.newPosition], // IS OK. Will cause disappearing snake's tail, and head will be new point.
+            }
+        case 'INTERRUPT':
+            console.log('INTERRUPT.');
+
+            return {
+                ...state,
+            }
 
         default:
             return state;
     }
 }
 
-function snakeMove(boardState: any, newDirection: any, dispatchMove: any) {
-    const snakeHead = boardState.snake[0];
-    console.log(snakeHead, newDirection);
 
+function snakeMove(boardState: any, newDirection: any, dispatch: any) {
+    const snakeHead = boardState.snake[0];
     const [yDirection, xDirection] = newDirection;
 
     if (yDirection === snakeHead[0]) {
         // it is LEFT or RIGHT move of snake head
-        if (xDirection < snakeHead[1]) {
-            // let interval1: any;
-            // -- for loop = LEFT MOVE
-            let i = snakeHead[1] - 1; /* next point */;
+
+        if (xDirection < snakeHead[1]) { // -- loop = LEFT MOVE
+            let interval1: any;
+            let i = snakeHead[1] - 1; // next left point
+
             const callback = () => {
-                console.log('callback');
-                dispatchMove([yDirection, i]);
-                i--;
+                let newPosition = [yDirection, i];
+                if (isWall(newPosition)) {
+                    clearInterval(interval1);
+                    // dispatch({
+                    //     type: 'CONFLICT_WITH_EDGES',
+                    //     newPosition: generateRandomPoint('target'),
+                    //     newSnakeHead: generateRandomPoint('snakeHead')
+                    // });
+                    dispatch({ type: 'FINISH' });
+                    dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
+                    dispatch({ type: 'REGENERATE_SNAKE', newPosition: generateRandomPoint('snakeHead') });
+                    return;
+                }
+                dispatch({ type: 'SNAKE_MOVE', newPosition });
+                --i; // maybe i--
             };
 
-            console.log(i);
-            setTimeout(callback, 500);
-            // if i < 0 => -1 and less => dispatch(CONFLICT_EDGE)
+            interval1 = setInterval(callback, FREQUENCY);
+        } else { // ++ loop = RIGHT MOVE
+            let interval2: any;
+            let i = snakeHead[1] + 1; // next right point
 
-            // clearInterval(interval1);
-        } else {
-            // ++ for loop = RIGHT MOVE
-            // for (let i = snakeHead[1]; i <= boardState.boardSize[1] - 1; i--) {
+            const callback = () => {
+                let newPosition = [yDirection, i];
+                if (isWall(newPosition)) {
+                    clearInterval(interval2);
+                    dispatch({ type: 'FINISH' });
+                    dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
+                    dispatch({ type: 'REGENERATE_SNAKE', newPosition: generateRandomPoint('snakeHead') });
+                    return;
+                }
+                dispatch({ type: 'SNAKE_MOVE', newPosition });
+                ++i; // maybe i++
+            };
 
-            // }
+            interval2 = setInterval(callback, FREQUENCY);
         }
     } else {
         // use case when clicked point NOT on the same Y axis
@@ -169,3 +236,34 @@ function snakeMove(boardState: any, newDirection: any, dispatchMove: any) {
     }
 
 }
+
+function generateRandomPoint(type: string) {
+    const newY = Math.floor(Math.random() * initialBoardState.boardSize[0]);
+    const newX = Math.floor(Math.random() * initialBoardState.boardSize[1]);
+
+    // Extend logic to avoid:
+    // same point as target, which was before
+    // same point of snake head or tail
+    // etc.
+    console.log(type + ' new random point', [newY, newX]);
+
+    return [newY, newX];
+}
+
+function isWall(point: number[]) {
+    if (point[1] < 0) { // x
+        return true; // left edge, x has been increasing towards 0
+    }
+    if (point[1] > initialBoardState.boardSize[1] - 1) { // x
+        return true; // right edge, x has been increasing from positive number towards board edge
+    }
+    if (point[0] < 0) { // y
+        return true; // top edge, y has been increasing towards 0
+    }
+    if (point[0] > initialBoardState.boardSize[0] - 1) { // y
+        return true; // right edge, x has been increasing from positive number towards board edge
+    }
+
+    return false;
+}
+

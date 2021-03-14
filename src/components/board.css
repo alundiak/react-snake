@@ -19,7 +19,7 @@ body {
 }
 
 .point.snake.head {
-  background-color: greenyellow;
+  background-color: #61dafb;
   box-shadow: #444;
 }
 

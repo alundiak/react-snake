@@ -5,6 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
+  // https://stackoverflow.com/questions/54892403/usereducer-action-dispatched-twice
+  // in strict mode, dispatch() from useReducer() was/is executed twice
   <React.StrictMode>
     <App />
   </React.StrictMode>,
