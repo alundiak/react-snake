@@ -10,6 +10,17 @@ as
 npx create-react-app react-snake --template typescript
 ```
 
+Deploy to Github Pages:
+
+```
+yarn deploy
+```
+
+Run production build locally:
+
+```
+serve -s build
+```
 
 ## Prettier
 
