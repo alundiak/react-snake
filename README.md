@@ -19,3 +19,11 @@ And I didn't know, VScode stopped working because of ambiguity. Interesting expe
 - https://prettier.io/docs/en/configuration.html
 - https://medium.com/technical-credit/using-prettier-with-vs-code-and-create-react-app-67c2449b9d08
 - https://saikat.dev/blog/posts/create-react-app-adding-prettier
+
+
+## Examples
+
+- Leetcode tasks (problems)
+    - https://leetcode.com/problems/design-snake-game/
+    - https://leetcode.com/problems/snakes-and-ladders/
+    - https://leetcode.com/problems/minimum-moves-to-reach-target-with-rotations/

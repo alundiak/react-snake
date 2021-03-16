@@ -4,7 +4,7 @@ import './board.css';
 
 const FREQUENCY = 1000;
 
-// Array for axis used in format [y x] of two positive numbers:
+// Array for axis used in format [x y] of two positive numbers:
 // y top-to-bottom and
 // x left-to-right
 const initialBoardState = {
@@ -34,7 +34,7 @@ export function Board({ children }: PropsWithChildren<any>) {
     // console.log(matrix);
 
     // This must be created on demand, after click for every cell once. NOT MORE
-    const gameTrigger = (newDirection: number[/* y x */]) => {
+    const gameTrigger = (newDirection: number[/* x y */]) => {
         if (!boardState.started) {
             dispatch({ type: 'START' });
         } else {
@@ -45,9 +45,9 @@ export function Board({ children }: PropsWithChildren<any>) {
     };
 
     const boardCore = [];
-    for (let y = 0; y < width; y++) {
-        for (let x = 0; x < height; x++) {
-            boardCore.push(<Point gameTrigger={gameTrigger} boardState={boardState} y={y} x={x} key={`cell-x[${x}]-y[${y}]`} />);
+    for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+            boardCore.push(<Point gameTrigger={gameTrigger} boardState={boardState} x={x} y={y} key={`cell-x[${x}]-y[${y}]`} />);
         }
     }
 
@@ -90,11 +90,6 @@ function boardReducer(state: any, action: any) {
 
         case 'SNAKE_MOVE':
             console.log('Snake is MOVING');
-            // Expected:
-            //  top: x = const, y--
-            //  bottom: x = const, y++
-            //  left: x--, y = const
-            //  right: x++, y = const
 
             // state.snake.unshift(action.newDirection);
             // state.snake.pop(); // add a keyframe animation for slow fade out of last point on tail
@@ -170,20 +165,32 @@ function boardReducer(state: any, action: any) {
     }
 }
 
-
+/**
+ * top: x = const, y--
+ * bottom: x = const, y++
+ * left: x--, y = const
+ * right: x++, y = const
+ *
+ * @param boardState
+ * @param newDirection
+ * @param dispatch
+ */
 function snakeMove(boardState: any, newDirection: any, dispatch: any) {
     const snakeHead = boardState.snake[0];
-    const [yDirection, xDirection] = newDirection;
+    const [snakeHeadX, snakeHeadY] = snakeHead;
+    const [xDirection, yDirection] = newDirection;
 
-    if (yDirection === snakeHead[0]) {
+    if (yDirection === snakeHeadY) {
         // it is LEFT or RIGHT move of snake head
 
-        if (xDirection < snakeHead[1]) { // -- loop = LEFT MOVE
-            let interval1: any;
-            let i = snakeHead[1] - 1; // next left point
+        let interval1: any;
+
+        if (xDirection < snakeHeadX) { // -- loop = LEFT MOVE
+
+            let i = snakeHeadX - 1; // next left point
 
             const callback = () => {
-                let newPosition = [yDirection, i];
+                let newPosition = [i, yDirection];
                 if (isWall(newPosition)) {
                     clearInterval(interval1);
                     // dispatch({
@@ -202,13 +209,18 @@ function snakeMove(boardState: any, newDirection: any, dispatch: any) {
 
             interval1 = setInterval(callback, FREQUENCY);
         } else { // ++ loop = RIGHT MOVE
-            let interval2: any;
-            let i = snakeHead[1] + 1; // next right point
+
+            if (interval1) {
+                clearInterval(interval1);
+            }
+
+            // let interval2: any;
+            let i = snakeHeadX + 1; // next right point
 
             const callback = () => {
-                let newPosition = [yDirection, i];
+                let newPosition = [i, yDirection];
                 if (isWall(newPosition)) {
-                    clearInterval(interval2);
+                    clearInterval(interval1);
                     dispatch({ type: 'FINISH' });
                     dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
                     dispatch({ type: 'REGENERATE_SNAKE', newPosition: generateRandomPoint('snakeHead') });
@@ -218,15 +230,15 @@ function snakeMove(boardState: any, newDirection: any, dispatch: any) {
                 ++i; // maybe i++
             };
 
-            interval2 = setInterval(callback, FREQUENCY);
+            interval1 = setInterval(callback, FREQUENCY);
         }
     } else {
         // use case when clicked point NOT on the same Y axis
     }
 
-    if (xDirection === snakeHead[1]) {
+    if (xDirection === snakeHeadX) {
         // it is TOP or BOTTOM move
-        if (yDirection < snakeHead[0]) {
+        if (yDirection < snakeHeadY) {
             // -- for loop = TOP MOVE
         } else {
             // ++ for loop = BOTTOM MOVE
@@ -238,30 +250,32 @@ function snakeMove(boardState: any, newDirection: any, dispatch: any) {
 }
 
 function generateRandomPoint(type: string) {
-    const newY = Math.floor(Math.random() * initialBoardState.boardSize[0]);
-    const newX = Math.floor(Math.random() * initialBoardState.boardSize[1]);
+    const newX = Math.floor(Math.random() * initialBoardState.boardSize[0]);
+    const newY = Math.floor(Math.random() * initialBoardState.boardSize[1]);
 
     // Extend logic to avoid:
     // same point as target, which was before
     // same point of snake head or tail
     // etc.
-    console.log(type + ' new random point', [newY, newX]);
+    console.log(type + ' new random point', [newX, newY]);
 
-    return [newY, newX];
+    return [newX, newY];
 }
 
 function isWall(point: number[]) {
-    if (point[1] < 0) { // x
-        return true; // left edge, x has been increasing towards 0
+    const [x, y] = point;
+
+    if (x < 0) {
+        return true; // left edge, x has been decreasing towards 0
     }
-    if (point[1] > initialBoardState.boardSize[1] - 1) { // x
-        return true; // right edge, x has been increasing from positive number towards board edge
+    if (x > initialBoardState.boardSize[0] - 1) {
+        return true; // right edge, x has been increasing from positive number towards board width edge
     }
-    if (point[0] < 0) { // y
-        return true; // top edge, y has been increasing towards 0
+    if (y < 0) {
+        return true; // top edge, y has been decreasing towards 0
     }
-    if (point[0] > initialBoardState.boardSize[0] - 1) { // y
-        return true; // right edge, x has been increasing from positive number towards board edge
+    if (y > initialBoardState.boardSize[1] - 1) {
+        return true; // right edge, x has been increasing from positive number towards board height edge
     }
 
     return false;

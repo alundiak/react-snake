@@ -31,8 +31,8 @@ body {
   grid-template-rows: 50px 50px 50px 50px 50px 50px 50px 50px;
 
   /* Meaning 0 1 2 3 4 => columns */
-  /* grid-auto-flow: column; */
+  grid-auto-flow: column;
 
   /* Meaning 0 1 2 3 4 => rows */
-  grid-auto-flow: dense;
+  /* grid-auto-flow: dense; */
 }
