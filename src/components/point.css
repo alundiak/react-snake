@@ -1,0 +1,23 @@
+.point {
+  border: 1px solid #ccc;
+  padding: 0;
+  /* BAD but quick and temp */
+  line-height: 46px;
+}
+
+.point.target {
+  background-color: #444
+}
+
+.point.snake {
+  background-color: greenyellow;
+}
+
+.point.snake.head {
+  background-color: #61dafb;
+  /* box-shadow: 0px 1px 10px red; */
+}
+
+.point.snake.head.bang {
+  background-color: red;
+}

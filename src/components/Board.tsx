@@ -18,7 +18,7 @@ const initialBoardState = {
     // },
     started: false,
     interrupt: false,
-    // conflict: false, // target | itself | edge
+    conflict: false, // target | 'itself' | 'edge' aka 'wall'
 };
 
 let movingInterval: any;
@@ -99,7 +99,11 @@ function boardReducer(state: any, action: any) {
         case 'SNAKE_MOVE': {
             console.log('Snake is MOVING');
 
-            const [, ...tail] = state.snake;
+            const [previousHead, ...tail] = state.snake;
+            if (tail.length > 0) {
+                tail.pop(); // remove last element
+                tail.unshift(previousHead); // add previous head as first
+            }
 
             return {
                 ...state,
@@ -121,9 +125,7 @@ function boardReducer(state: any, action: any) {
             // TODO
 
             const [head, ...tail] = state.snake;
-            console.log(tail);
-            tail.push(action.newPosition);
-            console.log(tail);
+            tail.unshift(action.newPosition);
 
             return {
                 ...state,
@@ -132,11 +134,9 @@ function boardReducer(state: any, action: any) {
             }
         }
 
-        case 'CONFLICT_WITH_TARGET':
+        case 'CONFLICT_WITH_TARGET': // MAYBE remove
             console.log('Target point reached. Generating new one.');
             // when snake eats target [xT, yT], size should be increased - new sub-array will be pushed to boardState.snake
-
-            // action.newPosition;
 
             return {
                 ...state,
@@ -149,6 +149,7 @@ function boardReducer(state: any, action: any) {
 
             return {
                 ...state,
+                conflict: 'itself',
                 // targetPoint: generateRandomPoint('target'), // BAD
                 // snake: [generateRandomPoint('snakeHead')] // BAD
             }
@@ -206,18 +207,15 @@ function snakeMove(boardState: any, newDirection: any, dispatch: any) {
     const [snakeHeadX, snakeHeadY] = snakeHead;
     const [xDirection, yDirection] = newDirection;
 
+    // it is LEFT or RIGHT move of snake head
     if (yDirection === snakeHeadY) {
-        // it is LEFT or RIGHT move of snake head
 
         if (xDirection < snakeHeadX) { // -- loop = LEFT MOVE
-
             let i = snakeHeadX - 1; // next left point
-
             const callback = () => {
                 reDispatchMove(dispatch, boardState, [i, yDirection]);
                 --i; // maybe i--
             };
-
             movingInterval = setInterval(callback, FREQUENCY);
         } else { // ++ loop = RIGHT MOVE
 
@@ -225,26 +223,41 @@ function snakeMove(boardState: any, newDirection: any, dispatch: any) {
                 clearInterval(movingInterval);
             }
 
-            // let interval2: any;
             let i = snakeHeadX + 1; // next right point
-
             const callback = () => {
                 reDispatchMove(dispatch, boardState, [i, yDirection]);
                 ++i; // maybe i++
             };
-
             movingInterval = setInterval(callback, FREQUENCY);
         }
     } else {
         // use case when clicked point NOT on the same Y axis
     }
 
+    // it is TOP or BOTTOM move
     if (xDirection === snakeHeadX) {
-        // it is TOP or BOTTOM move
-        if (yDirection < snakeHeadY) {
-            // -- for loop = TOP MOVE
-        } else {
-            // ++ for loop = BOTTOM MOVE
+        if (yDirection < snakeHeadY) { // -- for loop = TOP MOVE
+
+            let i = snakeHeadY - 1; // next top point
+            const callback = () => {
+                reDispatchMove(dispatch, boardState, [xDirection, i]);
+                --i;
+            };
+            movingInterval = setInterval(callback, FREQUENCY);
+
+        } else { // ++ for loop = BOTTOM MOVE
+
+            if (movingInterval) {
+                clearInterval(movingInterval);
+            }
+
+            let i = snakeHeadY + 1; // next bottom point
+            const callback = () => {
+                reDispatchMove(dispatch, boardState, [xDirection, i]);
+                ++i;
+            };
+            movingInterval = setInterval(callback, FREQUENCY);
+
         }
     } else {
         // use case when clicked point NOT on the same X axis
@@ -253,21 +266,33 @@ function snakeMove(boardState: any, newDirection: any, dispatch: any) {
 
 function reDispatchMove(dispatch: any, boardState: any, newPosition: number[]) {
     if (isWall(newPosition)) {
-        clearInterval(movingInterval);
-        dispatch({ type: 'FINISH' });
-        dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
-        dispatch({ type: 'REGENERATE_SNAKE', newPosition: generateRandomPoint('snakeHead') });
-        return;
+        regeneratePoints(dispatch);
+        // return; // maybe ???
     }
 
     dispatch({ type: 'SNAKE_MOVE', newPosition });
 
-    const isTargetEaten = newPosition[0] === boardState.targetPoint[0] && newPosition[1] === boardState.targetPoint[1];
-    if (isTargetEaten) {
-        // boardState.snake.push(newPosition);
+    if (isTargetEaten(boardState, newPosition)) {
         dispatch({ type: 'GROW_SNAKE', newPosition });
         dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
     }
+
+    const [, ...tail] = boardState.snake;
+    if (tail.length > 0) {
+        if (isItselfEaten(tail, newPosition)) {
+            dispatch({ type: 'CONFLICT_WITH_ITSELF' });
+            regeneratePoints(dispatch);
+        }
+    };
+}
+
+function regeneratePoints(dispatch: any) {
+    clearInterval(movingInterval);
+    dispatch({ type: 'FINISH' });
+    setTimeout(() => {
+        dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
+        dispatch({ type: 'REGENERATE_SNAKE', newPosition: generateRandomPoint('snakeHead') });
+    }, 3000);
 }
 
 function generateRandomPoint(type: string) {
@@ -301,4 +326,12 @@ function isWall(point: number[]) {
 
     return false;
 }
+
+const isTargetEaten = (boardState: any, newPosition: number[]) => {
+    return newPosition[0] === boardState.targetPoint[0] && newPosition[1] === boardState.targetPoint[1];
+}
+
+const isItselfEaten = (tail: any, newPosition: number[]) => tail.some((el: number[]) => {
+    return el[0] === newPosition[0] && el[1] === newPosition[1];
+});
 

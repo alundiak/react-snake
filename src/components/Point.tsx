@@ -1,4 +1,5 @@
 import React from 'react';
+import './point.css';
 
 export function Point({ className = '', gameTrigger, boardState, x, y }: any) {
 
