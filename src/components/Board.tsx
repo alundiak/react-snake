@@ -9,7 +9,7 @@ const FREQUENCY = 1000;
 // x left-to-right
 const initialBoardState = {
     boardSize: [8, 8],
-    targetPoint: [2, 3],
+    targetPoint: [2, 5],
     snake: [[4, 5]],
     // snake: [[4, 5], [4, 6], [5, 6], [6, 6]],
     // snake: { // alternative
@@ -17,12 +17,16 @@ const initialBoardState = {
     //     tail: []
     // },
     started: false,
-    // finished: false,
+    interrupt: false,
     // conflict: false, // target | itself | edge
 };
 
+let movingInterval: any;
+
 // Approach using <div> and css-grid layout
 export function Board({ children }: PropsWithChildren<any>) {
+    // console.log('Board re-render');
+
     const [boardState, dispatch] = useReducer(
         boardReducer,
         initialBoardState
@@ -38,6 +42,7 @@ export function Board({ children }: PropsWithChildren<any>) {
         if (!boardState.started) {
             dispatch({ type: 'START' });
         } else {
+            clearInterval(movingInterval);
             dispatch({ type: 'INTERRUPT' });
         }
 
@@ -47,6 +52,9 @@ export function Board({ children }: PropsWithChildren<any>) {
     const boardCore = [];
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
+            // console.log('loop re-invoke');
+            // TODO improve performance
+            // Every cell on the board changed, every snake moved, this loop will be re-invoked.
             boardCore.push(<Point gameTrigger={gameTrigger} boardState={boardState} x={x} y={y} key={`cell-x[${x}]-y[${y}]`} />);
         }
     }
@@ -88,8 +96,20 @@ function boardReducer(state: any, action: any) {
                 // snake: [generateRandomPoint('snakeHead')] // BAD
             }
 
-        case 'SNAKE_MOVE':
+        case 'SNAKE_MOVE': {
             console.log('Snake is MOVING');
+
+            const [, ...tail] = state.snake;
+
+            return {
+                ...state,
+                snake: [action.newPosition, ...tail],
+                interrupt: false
+            }
+        }
+
+        case 'GROW_SNAKE': {
+            console.log('Snake is GROWING');
 
             // state.snake.unshift(action.newDirection);
             // state.snake.pop(); // add a keyframe animation for slow fade out of last point on tail
@@ -100,16 +120,21 @@ function boardReducer(state: any, action: any) {
             // const [snakeHead, ...snakeTail] = state.snake; // snakeTail can be undefined or many arrays [].length == 2
             // TODO
 
-            const [, ...tail] = state.snake;
+            const [head, ...tail] = state.snake;
+            console.log(tail);
+            tail.push(action.newPosition);
+            console.log(tail);
 
             return {
                 ...state,
-                snake: [action.newPosition, ...tail]
+                snake: [head, ...tail],
+                interrupt: false
             }
+        }
 
         case 'CONFLICT_WITH_TARGET':
             console.log('Target point reached. Generating new one.');
-            // when snake eats target [yT, xT], size should be increased - new sub-array will be pushed to boardState.snake
+            // when snake eats target [xT, yT], size should be increased - new sub-array will be pushed to boardState.snake
 
             // action.newPosition;
 
@@ -154,10 +179,11 @@ function boardReducer(state: any, action: any) {
                 snake: [action.newPosition], // IS OK. Will cause disappearing snake's tail, and head will be new point.
             }
         case 'INTERRUPT':
-            console.log('INTERRUPT.');
+            console.log('INTERRUPT');
 
             return {
                 ...state,
+                interrupt: true
             }
 
         default:
@@ -183,54 +209,31 @@ function snakeMove(boardState: any, newDirection: any, dispatch: any) {
     if (yDirection === snakeHeadY) {
         // it is LEFT or RIGHT move of snake head
 
-        let interval1: any;
-
         if (xDirection < snakeHeadX) { // -- loop = LEFT MOVE
 
             let i = snakeHeadX - 1; // next left point
 
             const callback = () => {
-                let newPosition = [i, yDirection];
-                if (isWall(newPosition)) {
-                    clearInterval(interval1);
-                    // dispatch({
-                    //     type: 'CONFLICT_WITH_EDGES',
-                    //     newPosition: generateRandomPoint('target'),
-                    //     newSnakeHead: generateRandomPoint('snakeHead')
-                    // });
-                    dispatch({ type: 'FINISH' });
-                    dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
-                    dispatch({ type: 'REGENERATE_SNAKE', newPosition: generateRandomPoint('snakeHead') });
-                    return;
-                }
-                dispatch({ type: 'SNAKE_MOVE', newPosition });
+                reDispatchMove(dispatch, boardState, [i, yDirection]);
                 --i; // maybe i--
             };
 
-            interval1 = setInterval(callback, FREQUENCY);
+            movingInterval = setInterval(callback, FREQUENCY);
         } else { // ++ loop = RIGHT MOVE
 
-            if (interval1) {
-                clearInterval(interval1);
+            if (movingInterval) {
+                clearInterval(movingInterval);
             }
 
             // let interval2: any;
             let i = snakeHeadX + 1; // next right point
 
             const callback = () => {
-                let newPosition = [i, yDirection];
-                if (isWall(newPosition)) {
-                    clearInterval(interval1);
-                    dispatch({ type: 'FINISH' });
-                    dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
-                    dispatch({ type: 'REGENERATE_SNAKE', newPosition: generateRandomPoint('snakeHead') });
-                    return;
-                }
-                dispatch({ type: 'SNAKE_MOVE', newPosition });
+                reDispatchMove(dispatch, boardState, [i, yDirection]);
                 ++i; // maybe i++
             };
 
-            interval1 = setInterval(callback, FREQUENCY);
+            movingInterval = setInterval(callback, FREQUENCY);
         }
     } else {
         // use case when clicked point NOT on the same Y axis
@@ -246,7 +249,25 @@ function snakeMove(boardState: any, newDirection: any, dispatch: any) {
     } else {
         // use case when clicked point NOT on the same X axis
     }
+}
 
+function reDispatchMove(dispatch: any, boardState: any, newPosition: number[]) {
+    if (isWall(newPosition)) {
+        clearInterval(movingInterval);
+        dispatch({ type: 'FINISH' });
+        dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
+        dispatch({ type: 'REGENERATE_SNAKE', newPosition: generateRandomPoint('snakeHead') });
+        return;
+    }
+
+    dispatch({ type: 'SNAKE_MOVE', newPosition });
+
+    const isTargetEaten = newPosition[0] === boardState.targetPoint[0] && newPosition[1] === boardState.targetPoint[1];
+    if (isTargetEaten) {
+        // boardState.snake.push(newPosition);
+        dispatch({ type: 'GROW_SNAKE', newPosition });
+        dispatch({ type: 'REGENERATE_TARGET', newPosition: generateRandomPoint('target') });
+    }
 }
 
 function generateRandomPoint(type: string) {

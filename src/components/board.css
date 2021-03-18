@@ -23,6 +23,10 @@ body {
   box-shadow: #444;
 }
 
+.point.snake.head.bang {
+  background-color: red;
+}
+
 .wrapper {
   width: 600px;
   display: grid;
@@ -30,9 +34,9 @@ body {
   grid-template-columns: repeat(8, 50px);
   grid-template-rows: 50px 50px 50px 50px 50px 50px 50px 50px;
 
-  /* Meaning 0 1 2 3 4 => columns */
+  /* Meaning 0 1 2 3 4 => columns. If we use array [then it's Y, that is X] */
   grid-auto-flow: column;
 
-  /* Meaning 0 1 2 3 4 => rows */
-  /* grid-auto-flow: dense; */
+  /* Meaning 0 1 2 3 4 => rows. If we use array [then it's X, that is Y] */
+  /* grid-auto-flow: dense; */ /* Default CSS setting */
 }

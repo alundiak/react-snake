@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function Point({ gameTrigger, boardState, x, y }: any) {
+export function Point({ className = '', gameTrigger, boardState, x, y }: any) {
 
 	const isTarget = () => {
 		if (x === boardState.targetPoint[0] && y === boardState.targetPoint[1]) {
@@ -27,13 +27,13 @@ export function Point({ gameTrigger, boardState, x, y }: any) {
 		}
 	}
 
-	const className = `${isTarget()} ${isSnake()}`;
+	const composedClassName = `${isTarget()} ${isSnake()} ${className}`;
 
 	const onPointClickHandler = (/* e: any */) => {
 		return !isSnake() ? gameTrigger([x, y]) : null;
 	};
 
-	return <div className={`point ${className}`} onClick={onPointClickHandler}>{applyAxis(x, y)}</div>
+	return <div className={`point ${composedClassName}`} onClick={onPointClickHandler}>{applyAxis(x, y)}</div>
 }
 
 function applyAxis(x: number, y: number) {
