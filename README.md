@@ -38,3 +38,4 @@ And I didn't know, VScode stopped working because of ambiguity. Interesting expe
     - https://leetcode.com/problems/design-snake-game/
     - https://leetcode.com/problems/snakes-and-ladders/
     - https://leetcode.com/problems/minimum-moves-to-reach-target-with-rotations/
+    - https://css-tricks.com/generating-and-solving-sudokus-in-css/ sudoku also quad-based
