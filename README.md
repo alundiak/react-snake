@@ -13,13 +13,13 @@ npx create-react-app react-snake --template typescript
 Deploy to Github Pages:
 
 ```
-yarn deploy
+npm run deploy
 ```
 
 Run production build locally:
 
 ```
-serve -s build
+npm run build
 ```
 
 ## Prettier
