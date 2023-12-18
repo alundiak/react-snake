@@ -2,6 +2,11 @@
 
 My implementation of popular game 'Snake' in TypeScript, React and CSS grid.
 
+Also used `useReducer()` React hook.
+
+TODO: `useState()`, `useContext()`, `useLayoutEffect()` (when border-conflict happens).
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 as
