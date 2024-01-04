@@ -43,11 +43,13 @@ Note. Both Vite and Vitest evolved from VueJS community.
 
 Tech note.
 
-`%PUBLIC_URL%`-approach from CRA/Webpack was used to define proper URL base path for localhost and GitHub Page. 
+- `npx create-vite my-app` - I looked up boilerplate to compare.
+- `npm i vite -D`
+- `npm i jsdom vitest react-test-renderer@latest happy-dom @vitest/ui  @types/react-test-renderer -D`
 
-CRA deployments info - https://create-react-app.dev/docs/deployment/
+- `%PUBLIC_URL%`-approach from CRA/Webpack was used to define proper URL base path for localhost and GitHub Page. CRA deployments info - https://create-react-app.dev/docs/deployment/
 
-Using Vite it requires change in `vite.config.js`:
+- Using Vite it requires change in `vite.config.js`:
 
 ```
   base: '/react-snake/',
@@ -66,6 +68,11 @@ And worth mentioning, that Vite setup now, in Jan-2024 suggest `type: module` in
 ```
  <script type="module" src="/src/main.tsx"></script>
 ```
+
+Web Vitals is not added by Vite developers in template. So need to add it manually:
+
+- `npm install web-vitals`
+
 
 
 ### React + TypeScript + Vite (from template README.md)
