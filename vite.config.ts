@@ -7,4 +7,5 @@ export default defineConfig({
   build: {
     outDir: 'build', // default dist
   },
+  base: '/react-snake/',
 })
