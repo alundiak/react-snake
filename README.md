@@ -33,13 +33,40 @@ Leetcode tasks (problems):
 - https://leetcode.com/problems/minimum-moves-to-reach-target-with-rotations/
 - https://css-tricks.com/generating-and-solving-sudokus-in-css/ sudoku also quad-based
 
-## 2024
+## 2024 Migrated to Vite and Vitest.
 
-Rework codebase using [Vite](https://vitejs.dev/) setup instead of `react-scripts` via `webpack`. 
+Reworked codebase using [Vite](https://vitejs.dev/) setup instead of `react-scripts` via `webpack`. 
 
 Introduced [Vitest](https://vitest.dev/) instead of `@testing-library/react`. Used hints from [here](https://github.com/vitest-dev/vitest/tree/main/examples/react).
 
 Note. Both Vite and Vitest evolved from VueJS community.
+
+Tech note.
+
+`%PUBLIC_URL%`-approach from CRA/Webpack was used to define proper URL base path for localhost and GitHub Page. 
+
+CRA deployments info - https://create-react-app.dev/docs/deployment/
+
+Using Vite it requires change in `vite.config.js`:
+
+```
+  base: '/react-snake/',
+```
+
+And I also added this:
+
+```
+  build: {
+    outDir: 'build', // because default was 'dist'
+  },
+```
+
+And worth mentioning, that Vite setup now, in Jan-2024 suggest `type: module` in `package.json` and I assume that is way Vite template generates code fro React:
+
+```
+ <script type="module" src="/src/main.tsx"></script>
+```
+
 
 ### React + TypeScript + Vite (from template README.md)
 
