@@ -1,5 +1,5 @@
-import React from 'react';
+// import React from 'react';
 
-export function Axis({ }: any) {
+export function Axis() {
     return <div>TODO</div>
 }

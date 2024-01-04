@@ -1,4 +1,4 @@
-import React, { useReducer, PropsWithChildren } from 'react';
+import { useReducer, PropsWithChildren } from 'react';
 import { Point } from './Point';
 import './board.css';
 
@@ -283,7 +283,7 @@ function reDispatchMove(dispatch: any, boardState: any, newPosition: number[]) {
             dispatch({ type: 'CONFLICT_WITH_ITSELF' });
             regeneratePoints(dispatch);
         }
-    };
+    }
 }
 
 function regeneratePoints(dispatch: any) {

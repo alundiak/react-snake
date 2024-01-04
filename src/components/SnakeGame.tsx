@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Board } from './Board';
 import ThemeContext from './ThemeContext';
 import './snake-game.css';

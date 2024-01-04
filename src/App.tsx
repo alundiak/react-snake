@@ -1,11 +1,13 @@
-import React from 'react';
+// import React from 'react';
 import { SnakeGame } from './components/SnakeGame';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="">Snake</header>
+      <header className="">
+        <h2>Snake</h2>
+      </header>
       <main>
         <SnakeGame />
       </main>
