@@ -1,8 +1,3 @@
-/* taken from https://gridbyexample.com/examples/example18/ */
-body {
-  margin: 40px;
-}
-
 .wrapper {
   width: 600px;
   display: grid;
@@ -14,5 +9,6 @@ body {
   grid-auto-flow: column;
 
   /* Meaning 0 1 2 3 4 => rows. If we use array [then it's X, that is Y] */
-  /* grid-auto-flow: dense; */ /* Default CSS setting */
+  /* grid-auto-flow: dense; */
+  /* Default CSS setting */
 }

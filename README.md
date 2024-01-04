@@ -2,6 +2,8 @@
 
 My implementation of popular game 'Snake' in TypeScript, React and CSS grid.
 
+It's my React-educational goal, to have a repository of code where I use all react features.
+
 Also used `useReducer()` React hook.
 
 TODO: `useState()`, `useContext()`, `useLayoutEffect()` (when border-conflict happens).
@@ -44,3 +46,7 @@ And I didn't know, VScode stopped working because of ambiguity. Interesting expe
     - https://leetcode.com/problems/snakes-and-ladders/
     - https://leetcode.com/problems/minimum-moves-to-reach-target-with-rotations/
     - https://css-tricks.com/generating-and-solving-sudokus-in-css/ sudoku also quad-based
+
+# 2024
+
+Rework codebase using Vite setup instead fo Webpack.
