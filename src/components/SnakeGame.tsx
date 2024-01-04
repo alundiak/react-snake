@@ -1,16 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Board } from './Board';
-// import { Point } from './Point';
-// import { Snake } from './Snake';
-
-// import './snake-game.css';
+import ThemeContext from './ThemeContext';
+import './snake-game.css';
 
 // OR random   Math.random(10, 0);
 export function SnakeGame() {
   // dynamics, re-renders, etc
+  const [theme, setTheme] = useState('light');
+
+  const className = theme || '';
 
   return (
-    <Board>
-    </Board>
+    <div className={className}>
+      <ThemeContext.Provider value={theme}>
+        <Board>
+        </Board>
+        <label>
+          <input
+            type="checkbox"
+            checked={theme === 'dark'}
+            onChange={(e) => {
+              setTheme(e.target.checked ? 'dark' : 'light')
+            }}
+          />
+          Use {theme === 'dark' ? 'light' : 'dark'} mode
+        </label>
+      </ThemeContext.Provider>
+    </div>
   );
 }

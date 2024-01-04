@@ -5,8 +5,24 @@
   line-height: 46px;
 }
 
-.point.target {
+.point.light {
+  background-color: white
+}
+
+.point.dark {
+  background-color: black;
+}
+
+/* .point.target {
   background-color: #444
+} */
+
+.point.target.light {
+  background-color: #444
+}
+
+.point.target.dark {
+  background-color: yellow
 }
 
 .point.snake {

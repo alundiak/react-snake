@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import ThemeContext from './ThemeContext';
 import './point.css';
 
 export function Point({ className = '', gameTrigger, boardState, x, y }: any) {
+	const theme = useContext(ThemeContext);
 
 	const isTarget = () => {
 		if (x === boardState.targetPoint[0] && y === boardState.targetPoint[1]) {
@@ -28,7 +30,12 @@ export function Point({ className = '', gameTrigger, boardState, x, y }: any) {
 		}
 	}
 
-	const composedClassName = `${isTarget()} ${isSnake()} ${className}`;
+	let composedClassName = `${isTarget()} ${isSnake()} ${className}`;
+
+	if (theme) {
+		composedClassName += theme;
+	}
+	console.log(composedClassName);
 
 	const onPointClickHandler = (/* e: any */) => {
 		return !isSnake() ? gameTrigger([x, y]) : null;
