@@ -25,8 +25,6 @@ let movingInterval: any;
 
 // Approach using <div> and css-grid layout
 export function Board({ children }: PropsWithChildren<any>) {
-    // console.log('Board re-render');
-
     const [boardState, dispatch] = useReducer(
         boardReducer,
         initialBoardState
