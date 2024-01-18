@@ -210,7 +210,6 @@ dist
 **/*.backup.*
 **/*.back.*
 build
-__snapshots__
 
 node_modules
 
