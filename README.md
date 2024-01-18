@@ -14,6 +14,7 @@ In the code I used:
 - React `useContext()` hook and `createContext()`.
 
 TODO: 
+- So far no need, but use `useRef()` hook to store data variables which are rather constant but it's better to NOT re-declare it all the time inside of component when it renders. `ref-current` will be kinda "cached" between re-renders and also its change will NOT trigger re-rendering.
 - `useLayoutEffect()` (when border-conflict happens), 
 - `useCallback()`, `useMemo()` and/or - Maybe `React.memo()` to improve performance. Used in fp-react-examples repo.
 - Maybe `React.lazy()`
@@ -45,7 +46,7 @@ Tech note.
 
 - `npx create-vite my-app` - I looked up boilerplate to compare.
 - `npm i vite -D`
-- `npm i jsdom vitest react-test-renderer@latest happy-dom @vitest/ui  @types/react-test-renderer -D`
+- `npm i jsdom happy-dom vitest @vitest/ui react-test-renderer @types/react-test-renderer -D`
 
 - `%PUBLIC_URL%`-approach from CRA/Webpack was used to define proper URL base path for localhost and GitHub Page. CRA deployments info - https://create-react-app.dev/docs/deployment/
 
