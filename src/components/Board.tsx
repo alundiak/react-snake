@@ -1,4 +1,4 @@
-import React, { useReducer, PropsWithChildren } from 'react';
+import { useReducer, PropsWithChildren } from 'react';
 import { Point } from './Point';
 import './board.css';
 
@@ -25,8 +25,6 @@ let movingInterval: any;
 
 // Approach using <div> and css-grid layout
 export function Board({ children }: PropsWithChildren<any>) {
-    // console.log('Board re-render');
-
     const [boardState, dispatch] = useReducer(
         boardReducer,
         initialBoardState
@@ -283,7 +281,7 @@ function reDispatchMove(dispatch: any, boardState: any, newPosition: number[]) {
             dispatch({ type: 'CONFLICT_WITH_ITSELF' });
             regeneratePoints(dispatch);
         }
-    };
+    }
 }
 
 function regeneratePoints(dispatch: any) {

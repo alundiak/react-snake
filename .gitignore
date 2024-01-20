@@ -205,12 +205,11 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-### react ###
+### React ###
 .DS_*
 **/*.backup.*
 **/*.back.*
 build
-__snapshot__
 
 node_modules
 

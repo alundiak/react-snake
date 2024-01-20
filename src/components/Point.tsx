@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import ThemeContext from './ThemeContext';
 import './point.css';
 
@@ -35,7 +35,7 @@ export function Point({ className = '', gameTrigger, boardState, x, y }: any) {
 	if (theme) {
 		composedClassName += theme;
 	}
-	console.log(composedClassName);
+	// console.log(composedClassName);
 
 	const onPointClickHandler = (/* e: any */) => {
 		return !isSnake() ? gameTrigger([x, y]) : null;
