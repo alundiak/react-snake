@@ -5,7 +5,7 @@ exports[`renders component 1`] = `
   className="App"
 >
   <header
-    className=""
+    className="header"
   >
     <h2>
       Snake
