@@ -1,18 +1,24 @@
-name: CI
+name: React Snake CI (updated Jan-2024)
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
+  # pull_request:
+  #   types:
+  #     - opened
+  #     - synchronize
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [19.x, 20.x, 21.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
