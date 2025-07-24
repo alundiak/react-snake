@@ -1,5 +1,3 @@
-// import React from 'react';
-
 export function Axis() {
-    return <div>TODO</div>
+  return <div>TODO</div>;
 }
