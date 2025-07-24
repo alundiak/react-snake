@@ -35,7 +35,7 @@ export function Point({ className = "", gameTrigger, boardState, x, y }: any) {
   if (theme) {
     composedClassName += theme;
   }
-  console.log(composedClassName);
+  // console.log(composedClassName);
 
   const onPointClickHandler = (/* e: any */) => {
     return !isSnake() ? gameTrigger([x, y]) : null;
