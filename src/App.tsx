@@ -1,5 +1,5 @@
-import { SnakeGame } from './components/SnakeGame';
-import './App.css';
+import { SnakeGame } from "./components/SnakeGame";
+import "./App.css";
 
 function App() {
   return (

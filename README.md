@@ -9,16 +9,18 @@ It's my React-educational implementation of popular game 'Snake'.
 - CSS grid
 
 In the code I used:
+
 - React `useState()` hook.
 - React `useReducer()` hook.
 - React `useContext()` hook and `createContext()`.
 
-TODO: 
+TODO:
+
 - So far no need, but use `useRef()` hook to store data variables which are rather constant but it's better to NOT re-declare it all the time inside of component when it renders. `ref-current` will be kinda "cached" between re-renders and also its change will NOT trigger re-rendering.
-- `useLayoutEffect()` (when border-conflict happens), 
+- `useLayoutEffect()` (when border-conflict happens),
 - `useCallback()`, `useMemo()` and/or - Maybe `React.memo()` to improve performance. Used in fp-react-examples repo.
 - Maybe `React.lazy()`
-- Maybe `useDeferredValue()` and  `<Suspense>`.
+- Maybe `useDeferredValue()` and `<Suspense>`.
 - https://react.dev/reference/react/Profiler
 
 Code is deployed to GitHub Actions
@@ -34,9 +36,17 @@ Leetcode tasks (problems):
 - https://leetcode.com/problems/minimum-moves-to-reach-target-with-rotations/
 - https://css-tricks.com/generating-and-solving-sudokus-in-css/ sudoku also quad-based
 
+## 2025
+
+Migrated to ESLINT v9 - [guide](https://eslint.org/docs/latest/use/getting-started)
+
+```sh
+npm init @eslint/config@latest
+```
+
 ## 2024 Migrated to Vite and Vitest.
 
-Reworked codebase using [Vite](https://vitejs.dev/) setup instead of `react-scripts` via `webpack`. 
+Reworked codebase using [Vite](https://vitejs.dev/) setup instead of `react-scripts` via `webpack`.
 
 Introduced [Vitest](https://vitest.dev/) instead of `@testing-library/react`. Used hints from [here](https://github.com/vitest-dev/vitest/tree/main/examples/react).
 
@@ -52,13 +62,13 @@ Tech note.
 
 - Using Vite it requires change in `vite.config.js`:
 
-```
+```sh
   base: '/react-snake/',
 ```
 
 And I also added this:
 
-```
+```json
   build: {
     outDir: 'build', // because default was 'dist'
   },
@@ -66,15 +76,13 @@ And I also added this:
 
 And worth mentioning, that Vite setup now, in Jan-2024 suggest `type: module` in `package.json` and I assume that is way Vite template generates code fro React:
 
-```
- <script type="module" src="/src/main.tsx"></script>
+```html
+<script type="module" src="/src/main.tsx"></script>
 ```
 
 Web Vitals is not added by Vite developers in template. So need to add it manually:
 
 - `npm install web-vitals`
-
-
 
 ### React + TypeScript + Vite (from template README.md)
 
@@ -95,18 +103,17 @@ If you are developing a production application, we recommend updating the config
 export default {
   // other rules...
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
+    ecmaVersion: "latest",
+    sourceType: "module",
+    project: ["./tsconfig.json", "./tsconfig.node.json"],
     tsconfigRootDir: __dirname,
   },
-}
+};
 ```
 
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
-
 
 ## Before 2024
 
@@ -114,19 +121,19 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 as
 
-```
+```sh
 npx create-react-app react-snake --template typescript
 ```
 
 Deploy to Github Pages:
 
-```
+```sh
 npm run deploy
 ```
 
 Run production build locally:
 
-```
+```sh
 npm run build
 ```
 
