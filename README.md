@@ -44,6 +44,8 @@ Migrated to ESLINT v9 - [guide](https://eslint.org/docs/latest/use/getting-start
 npm init @eslint/config@latest
 ```
 
+And also added `@vitest/eslint-plugin` (because legacy `eslint-plugin-vitest` refers to eslint v8).
+
 ## 2024 Migrated to Vite and Vitest.
 
 Reworked codebase using [Vite](https://vitejs.dev/) setup instead of `react-scripts` via `webpack`.

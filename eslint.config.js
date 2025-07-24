@@ -4,7 +4,7 @@ import globals from "globals";
 import ts from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import react from "eslint-plugin-react";
-import vitest from "eslint-plugin-vitest";
+import vitest from "@vitest/eslint-plugin";
 
 export default defineConfig([
   {
@@ -62,5 +62,9 @@ export default defineConfig([
       },
     },
     plugins: { vitest },
+    rules: {
+      ...vitest.configs.recommended.rules, // or vitest.configs.all.rules to enable all rules
+      "vitest/max-nested-describe": ["error", { max: 3 }],
+    },
   },
 ]);
